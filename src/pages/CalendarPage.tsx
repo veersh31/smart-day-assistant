@@ -3,6 +3,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday
 import { useEvents } from '@/hooks/useEvents';
 import { EventCard } from '@/components/dashboard/EventCard';
 import { AddEventDialog } from '@/components/dashboard/AddEventDialog';
+import { ImportICSDialog } from '@/components/dashboard/ImportICSDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -16,7 +17,7 @@ import {
 import { cn } from '@/lib/utils';
 
 export default function CalendarPage() {
-  const { events, loading, addEvent, deleteEvent } = useEvents();
+  const { events, loading, addEvent, importEvents, deleteEvent } = useEvents();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [view, setView] = useState<'calendar' | 'list'>('calendar');
@@ -71,6 +72,7 @@ export default function CalendarPage() {
               <List className="h-4 w-4" />
             </Button>
           </div>
+          <ImportICSDialog onImport={importEvents} />
           <AddEventDialog onAdd={addEvent} />
         </div>
       </div>

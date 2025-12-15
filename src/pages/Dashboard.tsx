@@ -15,10 +15,9 @@ import {
   Calendar, 
   Sparkles, 
   TrendingUp,
-  Loader2,
-  RefreshCw
+  Zap,
+  Target
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Dashboard() {
@@ -49,6 +48,7 @@ export default function Dashboard() {
   const pendingTasks = tasks.filter(t => t.status !== 'completed').length;
   const highPriorityTasks = tasks.filter(t => t.priority_level === 'high' && t.status !== 'completed').length;
   const upcomingEvents = events.length;
+  const completionRate = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
 
   const greeting = () => {
     const hour = new Date().getHours();
@@ -57,20 +57,22 @@ export default function Dashboard() {
     return 'Good evening';
   };
 
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0];
+
   return (
-    <div className="min-h-screen p-6 lg:p-8">
+    <div className="min-h-screen p-6 lg:p-8 bg-gradient-subtle">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <div>
+        <div className="animate-fade-in">
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
-            {greeting()}{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name.split(' ')[0]}` : ''}
+            {greeting()}{firstName ? `, ${firstName}` : ''} 👋
           </h1>
           <p className="text-muted-foreground mt-1">
             {format(new Date(), 'EEEE, MMMM d, yyyy')}
           </p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 animate-fade-in" style={{ animationDelay: '100ms' }}>
           <AddEventDialog onAdd={addEvent} />
           <AddTaskDialog onAdd={addTask} />
         </div>
@@ -78,47 +80,62 @@ export default function Dashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatsCard
-          title="Pending Tasks"
-          value={pendingTasks}
-          subtitle={`${completedTasks} completed`}
-          icon={CheckSquare}
-        />
-        <StatsCard
-          title="High Priority"
-          value={highPriorityTasks}
-          subtitle="Needs attention"
-          icon={TrendingUp}
-        />
-        <StatsCard
-          title="Upcoming Events"
-          value={upcomingEvents}
-          subtitle="This week"
-          icon={Calendar}
-        />
-        <StatsCard
-          title="AI Insights"
-          value={recommendations.length}
-          subtitle="Active suggestions"
-          icon={Sparkles}
-        />
+        <div className="animate-slide-up" style={{ animationDelay: '0ms' }}>
+          <StatsCard
+            title="Pending Tasks"
+            value={pendingTasks}
+            subtitle={`${completedTasks} completed`}
+            icon={CheckSquare}
+            variant="primary"
+          />
+        </div>
+        <div className="animate-slide-up" style={{ animationDelay: '50ms' }}>
+          <StatsCard
+            title="Completion Rate"
+            value={`${completionRate}%`}
+            subtitle="Keep it up!"
+            icon={Target}
+            variant="success"
+          />
+        </div>
+        <div className="animate-slide-up" style={{ animationDelay: '100ms' }}>
+          <StatsCard
+            title="High Priority"
+            value={highPriorityTasks}
+            subtitle="Needs attention"
+            icon={Zap}
+            variant={highPriorityTasks > 0 ? 'warning' : 'default'}
+          />
+        </div>
+        <div className="animate-slide-up" style={{ animationDelay: '150ms' }}>
+          <StatsCard
+            title="Upcoming Events"
+            value={upcomingEvents}
+            subtitle="This week"
+            icon={Calendar}
+            variant="accent"
+          />
+        </div>
       </div>
 
       {/* AI Recommendations */}
       {recommendations.length > 0 && (
-        <div className="mb-8">
+        <div className="mb-8 animate-fade-in" style={{ animationDelay: '200ms' }}>
           <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <div className="p-1.5 rounded-lg bg-primary/10">
+              <Sparkles className="h-4 w-4 text-primary" />
+            </div>
             <h2 className="text-lg font-semibold text-foreground">AI Recommendations</h2>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {recommendations.map((rec) => (
-              <RecommendationCard
-                key={rec.id}
-                recommendation={rec}
-                onDismiss={dismissRecommendation}
-                onApply={applyRecommendation}
-              />
+            {recommendations.map((rec, i) => (
+              <div key={rec.id} style={{ animationDelay: `${250 + i * 50}ms` }}>
+                <RecommendationCard
+                  recommendation={rec}
+                  onDismiss={dismissRecommendation}
+                  onApply={applyRecommendation}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -127,10 +144,12 @@ export default function Dashboard() {
       {/* Main Content Grid */}
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Tasks Section */}
-        <div>
+        <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-              <CheckSquare className="h-5 w-5 text-primary" />
+              <div className="p-1.5 rounded-lg bg-primary/10">
+                <CheckSquare className="h-4 w-4 text-primary" />
+              </div>
               Priority Tasks
             </h2>
           </div>
@@ -142,18 +161,18 @@ export default function Dashboard() {
               ))}
             </div>
           ) : tasks.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground border border-dashed border-border rounded-xl">
-              <CheckSquare className="h-10 w-10 mx-auto mb-3 opacity-50" />
-              <p>No tasks yet</p>
-              <p className="text-sm mt-1">Add your first task to get started</p>
+            <div className="text-center py-16 text-muted-foreground border-2 border-dashed border-border rounded-2xl bg-card/50 backdrop-blur-sm">
+              <CheckSquare className="h-12 w-12 mx-auto mb-4 opacity-30" />
+              <p className="font-medium">No tasks yet</p>
+              <p className="text-sm mt-1">Add your first task to get AI-powered prioritization</p>
             </div>
           ) : (
             <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
               {tasks.slice(0, 10).map((task, index) => (
                 <div 
                   key={task.id} 
-                  className="animate-fade-in"
-                  style={{ animationDelay: `${index * 50}ms` }}
+                  className="animate-slide-up"
+                  style={{ animationDelay: `${350 + index * 40}ms` }}
                 >
                   <TaskCard
                     task={task}
@@ -167,10 +186,12 @@ export default function Dashboard() {
         </div>
 
         {/* Events Section */}
-        <div>
+        <div className="animate-fade-in" style={{ animationDelay: '350ms' }}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-primary" />
+              <div className="p-1.5 rounded-lg bg-accent/10">
+                <Calendar className="h-4 w-4 text-accent" />
+              </div>
               Upcoming Events
             </h2>
           </div>
@@ -182,18 +203,18 @@ export default function Dashboard() {
               ))}
             </div>
           ) : events.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground border border-dashed border-border rounded-xl">
-              <Calendar className="h-10 w-10 mx-auto mb-3 opacity-50" />
-              <p>No upcoming events</p>
-              <p className="text-sm mt-1">Schedule your first event</p>
+            <div className="text-center py-16 text-muted-foreground border-2 border-dashed border-border rounded-2xl bg-card/50 backdrop-blur-sm">
+              <Calendar className="h-12 w-12 mx-auto mb-4 opacity-30" />
+              <p className="font-medium">No upcoming events</p>
+              <p className="text-sm mt-1">Schedule your first event to get AI insights</p>
             </div>
           ) : (
             <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
               {events.slice(0, 10).map((event, index) => (
                 <div 
                   key={event.id} 
-                  className="animate-fade-in"
-                  style={{ animationDelay: `${index * 50}ms` }}
+                  className="animate-slide-up"
+                  style={{ animationDelay: `${400 + index * 40}ms` }}
                 >
                   <EventCard
                     event={event}

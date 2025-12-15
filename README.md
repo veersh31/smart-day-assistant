@@ -1,73 +1,167 @@
-# Welcome to your Lovable project
+# 📅 Smart Day Assistant
 
-## Project info
+An AI-powered productivity app that helps you manage tasks and events with intelligent prioritization and recommendations.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+![Smart Day Assistant](https://img.shields.io/badge/Built%20with-React%20%2B%20TypeScript-blue)
+![AI Powered](https://img.shields.io/badge/AI-Groq%20LLaMA%203.3-green)
+![Database](https://img.shields.io/badge/Database-Supabase-brightgreen)
 
-## How can I edit this code?
+## ✨ Features
 
-There are several ways of editing your application.
+- 🤖 **AI-Powered Task Prioritization** - Automatically prioritizes tasks based on deadlines, importance, and context
+- 📊 **Smart Analytics** - Visual insights into your productivity and task completion rates
+- 📅 **Calendar Integration** - Import `.ics` files and sync with your calendar
+- ✅ **Intelligent Task Generation** - AI creates prep tasks for upcoming events
+- 🎯 **Personalized Recommendations** - Get AI-driven productivity tips tailored to your workload
+- 🌓 **Dark Mode** - Beautiful, clean UI with dark mode support
+- 🔐 **Secure Authentication** - Powered by Supabase Auth
 
-**Use Lovable**
+## 🚀 Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Frontend
+- **React 18** with TypeScript
+- **Vite** for blazing-fast development
+- **Tailwind CSS** + **shadcn/ui** for modern, accessible components
+- **React Router** for navigation
+- **TanStack Query** for data fetching
+- **Supabase** for authentication and database
 
-Changes made via Lovable will be committed automatically to this repo.
+### Backend
+- **Node.js** + **Express**
+- **LangChain** for AI integration
+- **Groq LLaMA 3.3 70B** for natural language processing
+- **Zod** for schema validation
 
-**Use your preferred IDE**
+### Database
+- **Supabase (PostgreSQL)** with Row Level Security
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 📦 Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
 
-Follow these steps:
+- Node.js 18+ and npm
+- A Supabase account (free tier works)
+- A Groq API key (free at [console.groq.com](https://console.groq.com))
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Installation
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/smart-day-assistant.git
+   cd smart-day-assistant
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+2. **Install dependencies**
+   ```bash
+   npm install
+   cd backend && npm install && cd ..
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+3. **Set up environment variables**
+
+   Copy `.env.example` to `.env` and fill in your values:
+   ```bash
+   cp .env.example .env
+   ```
+
+   Update the values in `.env`:
+   - Get Supabase credentials from your [Supabase Dashboard](https://supabase.com/dashboard)
+   - Get Groq API key from [console.groq.com](https://console.groq.com)
+
+4. **Run the development servers**
+
+   Terminal 1 - Frontend:
+   ```bash
+   npm run dev
+   ```
+
+   Terminal 2 - Backend:
+   ```bash
+   npm run backend:dev
+   ```
+
+5. **Open your browser**
+
+   Navigate to `http://localhost:8080`
+
+## 🌐 Deployment
+
+Ready to deploy? Check out our comprehensive [**Deployment Guide**](./DEPLOYMENT.md) for step-by-step instructions on deploying to:
+- Frontend: **Vercel**
+- Backend: **Railway** (or alternatives)
+
+## 📁 Project Structure
+
+```
+smart-day-assistant/
+├── src/                    # Frontend source code
+│   ├── components/         # React components
+│   ├── hooks/              # Custom React hooks
+│   ├── lib/                # Utilities and API clients
+│   ├── pages/              # Page components
+│   └── integrations/       # Supabase integration
+├── backend/                # Backend API server
+│   ├── routes/             # API routes
+│   └── server.js           # Express server
+├── supabase/              # Database migrations
+│   └── migrations/        # SQL migration files
+└── public/                # Static assets
 ```
 
-**Edit a file directly in GitHub**
+## 🛠️ Available Scripts
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Frontend
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
 
-**Use GitHub Codespaces**
+### Backend
+- `npm run backend` - Start backend server
+- `npm run backend:dev` - Start backend with auto-reload
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🔑 Environment Variables
 
-## What technologies are used for this project?
+See [`.env.example`](./.env.example) for all required environment variables.
 
-This project is built with:
+### Frontend (.env)
+- `VITE_SUPABASE_PROJECT_ID` - Your Supabase project ID
+- `VITE_SUPABASE_PUBLISHABLE_KEY` - Supabase anon/public key
+- `VITE_SUPABASE_URL` - Supabase project URL
+- `VITE_LANGCHAIN_API_ENDPOINT` - Backend API URL
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Backend (backend/.env)
+- `GROQ_API_KEY` - Groq API key for AI features
+- `FRONTEND_URL` - Frontend URL for CORS
+- `PORT` - Server port (default: 3001)
 
-## How can I deploy this project?
+## 🤝 Contributing
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## Can I connect a custom domain to my Lovable project?
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-Yes, you can!
+## 📄 License
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+This project is open source and available under the [MIT License](LICENSE).
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 🙏 Acknowledgments
+
+- Built with [shadcn/ui](https://ui.shadcn.com/) components
+- AI powered by [Groq](https://groq.com/) and [LangChain](https://langchain.com/)
+- Database and auth by [Supabase](https://supabase.com/)
+- Deployed on [Vercel](https://vercel.com/) and [Railway](https://railway.app/)
+
+## 📞 Support
+
+If you encounter any issues or have questions:
+1. Check the [Deployment Guide](./DEPLOYMENT.md)
+2. Open an issue on GitHub
+3. Check existing issues for solutions
+
+---
+
+**Made with ❤️ and AI**

@@ -142,6 +142,45 @@ export function useEvents() {
     }
   };
 
+  const importEvents = async (eventsData: {
+    title: string;
+    description: string;
+    start_time: string;
+    end_time: string;
+    location: string;
+  }[]) => {
+    if (!user) return;
+
+    try {
+      const eventsToInsert = eventsData.map(event => ({
+        user_id: user.id,
+        title: event.title,
+        description: event.description || null,
+        start_time: event.start_time,
+        end_time: event.end_time,
+        location: event.location || null,
+        priority_score: 50,
+      }));
+
+      const { error } = await supabase.from('calendar_events').insert(eventsToInsert);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Events imported',
+        description: `Successfully imported ${eventsData.length} events.`,
+      });
+    } catch (error: any) {
+      console.error('Error importing events:', error);
+      toast({
+        title: 'Error importing events',
+        description: error.message,
+        variant: 'destructive',
+      });
+      throw error;
+    }
+  };
+
   const deleteEvent = async (id: string) => {
     try {
       const { error } = await supabase.from('calendar_events').delete().eq('id', id);
@@ -165,6 +204,7 @@ export function useEvents() {
     events,
     loading,
     addEvent,
+    importEvents,
     deleteEvent,
     refetch: fetchEvents,
   };

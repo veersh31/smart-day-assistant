@@ -78,20 +78,29 @@ export function useRecommendations() {
     if (!user) return;
 
     try {
-      const { data: aiData, error: aiError } = await supabase.functions.invoke('ai-prioritize', {
-        body: {
-          type: 'recommendation',
-          context: {
-            tasks: tasks.slice(0, 5).map(t => `${t.title} (${t.priority_level})`).join(', '),
-            events: events.slice(0, 5).map(e => e.title).join(', '),
-          },
-        },
+      // Import LangChain API dynamically
+      const { langChainAPI } = await import('@/lib/langchain-api');
+
+      // Format tasks and events for LangChain
+      const tasksContext = tasks
+        .slice(0, 10)
+        .map(t => `${t.title} (${t.priority_level}, due: ${t.due_date || 'no deadline'})`)
+        .join(', ') || 'No active tasks';
+
+      const eventsContext = events
+        .slice(0, 10)
+        .map(e => `${e.title} at ${e.start_time || 'unscheduled'}`)
+        .join(', ') || 'No upcoming events';
+
+      // Call LangChain API for enhanced recommendations
+      const aiRecommendations = await langChainAPI.generateRecommendations({
+        tasks: tasksContext,
+        events: eventsContext,
       });
 
-      if (aiError) throw aiError;
-
-      if (Array.isArray(aiData) && aiData.length > 0) {
-        for (const rec of aiData) {
+      // Store recommendations in Supabase
+      if (Array.isArray(aiRecommendations) && aiRecommendations.length > 0) {
+        for (const rec of aiRecommendations) {
           await supabase.from('ai_recommendations').insert({
             user_id: user.id,
             type: rec.type,
@@ -99,9 +108,19 @@ export function useRecommendations() {
             description: rec.description,
           });
         }
+
+        toast({
+          title: 'AI Insights Generated',
+          description: `Generated ${aiRecommendations.length} personalized recommendations for you.`,
+        });
       }
     } catch (error: any) {
       console.error('Error generating recommendations:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to generate AI insights. Please try again.',
+        variant: 'destructive',
+      });
     }
   };
 

@@ -3,9 +3,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { 
-  Clock, 
-  Sparkles, 
+import {
+  Clock,
+  Sparkles,
   MoreHorizontal,
   Calendar,
   Trash2,
@@ -19,6 +19,7 @@ import {
   Users
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getCategoryColor, getCategoryBadge } from '@/lib/category-colors';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -175,13 +176,18 @@ export function TaskCard({ task, onStatusChange, onDelete }: TaskCardProps) {
                 {priority.charAt(0).toUpperCase() + priority.slice(1)}
               </Badge>
               
-              {task.category && category && (
-                <Badge 
-                  variant="secondary" 
-                  className={cn("text-xs font-medium gap-1", category.bg, category.color)}
+              {task.category && (
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "text-xs font-medium gap-1",
+                    getCategoryColor(task.category).bg,
+                    getCategoryColor(task.category).text,
+                    getCategoryColor(task.category).border
+                  )}
                 >
                   <CategoryIcon className="h-3 w-3" />
-                  {task.category}
+                  {getCategoryBadge(task.category)}
                 </Badge>
               )}
               

@@ -1,22 +1,46 @@
+import { useState } from 'react';
 import { format, isToday, isTomorrow } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Clock, 
-  MapPin, 
-  Sparkles, 
+import {
+  Clock,
+  MapPin,
+  Sparkles,
   MoreHorizontal,
   Trash2,
-  Calendar
+  Calendar,
+  Tag,
+  Briefcase,
+  User,
+  Heart,
+  DollarSign,
+  BookOpen,
+  ShoppingBag,
+  Palette,
+  Users
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getCategoryColor, getCategoryBadge } from '@/lib/category-colors';
+import { SetCategoryDialog } from './SetCategoryDialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
+const categoryIcons: Record<string, any> = {
+  Work: Briefcase,
+  Personal: User,
+  Health: Heart,
+  Finance: DollarSign,
+  Learning: BookOpen,
+  Errands: ShoppingBag,
+  Creative: Palette,
+  Social: Users,
+};
 
 interface CalendarEvent {
   id: string;
@@ -28,21 +52,32 @@ interface CalendarEvent {
   priority_score: number | null;
   ai_summary: string | null;
   suggested_reply: string | null;
+  category: string | null;
 }
 
 interface EventCardProps {
   event: CalendarEvent;
   onDelete: (id: string) => void;
+  onCategoryChange?: (id: string, category: string) => void;
 }
 
-export function EventCard({ event, onDelete }: EventCardProps) {
+export function EventCard({ event, onDelete, onCategoryChange }: EventCardProps) {
+  const [showCategoryDialog, setShowCategoryDialog] = useState(false);
   const startDate = new Date(event.start_time);
   const endDate = new Date(event.end_time);
-  
+  const category = event.category && categoryIcons[event.category];
+  const CategoryIcon = category || Briefcase;
+
   const getDateLabel = () => {
     if (isToday(startDate)) return 'Today';
     if (isTomorrow(startDate)) return 'Tomorrow';
     return format(startDate, 'EEE, MMM d');
+  };
+
+  const handleCategorySelect = (category: string) => {
+    if (onCategoryChange) {
+      onCategoryChange(event.id, category);
+    }
   };
 
   return (
@@ -67,6 +102,23 @@ export function EventCard({ event, onDelete }: EventCardProps) {
               <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                 {event.description}
               </p>
+            )}
+
+            {event.category && (
+              <div className="mt-2">
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "text-xs font-medium gap-1",
+                    getCategoryColor(event.category).bg,
+                    getCategoryColor(event.category).text,
+                    getCategoryColor(event.category).border
+                  )}
+                >
+                  <CategoryIcon className="h-3 w-3" />
+                  {getCategoryBadge(event.category)}
+                </Badge>
+              </div>
             )}
             
             {event.location && (
@@ -109,7 +161,12 @@ export function EventCard({ event, onDelete }: EventCardProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem 
+              <DropdownMenuItem onClick={() => setShowCategoryDialog(true)}>
+                <Tag className="h-4 w-4 mr-2" />
+                {event.category ? 'Change Category' : 'Set Category'}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
                 onClick={() => onDelete(event.id)}
                 className="text-destructive"
               >
@@ -120,6 +177,13 @@ export function EventCard({ event, onDelete }: EventCardProps) {
           </DropdownMenu>
         </div>
       </CardContent>
+
+      <SetCategoryDialog
+        open={showCategoryDialog}
+        onOpenChange={setShowCategoryDialog}
+        currentCategory={event.category}
+        onCategorySelect={handleCategorySelect}
+      />
     </Card>
   );
 }

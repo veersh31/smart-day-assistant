@@ -15,6 +15,7 @@ export interface CalendarEvent {
   ai_summary: string | null;
   suggested_reply: string | null;
   is_recurring: boolean | null;
+  category: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -181,6 +182,29 @@ export function useEvents() {
     }
   };
 
+  const updateEventCategory = async (id: string, category: string) => {
+    try {
+      const { error } = await supabase
+        .from('calendar_events')
+        .update({ category: category || null })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Category updated',
+        description: category ? `Event categorized as ${category}` : 'Category removed',
+      });
+    } catch (error: any) {
+      console.error('Error updating event category:', error);
+      toast({
+        title: 'Error updating category',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
   const deleteEvent = async (id: string) => {
     try {
       const { error } = await supabase.from('calendar_events').delete().eq('id', id);
@@ -205,6 +229,7 @@ export function useEvents() {
     loading,
     addEvent,
     importEvents,
+    updateEventCategory,
     deleteEvent,
     refetch: fetchEvents,
   };

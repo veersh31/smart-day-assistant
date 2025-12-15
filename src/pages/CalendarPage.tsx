@@ -1,35 +1,47 @@
 import { useState } from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday } from 'date-fns';
 import { useEvents } from '@/hooks/useEvents';
+import { useTasks } from '@/hooks/useTasks';
 import { EventCard } from '@/components/dashboard/EventCard';
+import { TaskCard } from '@/components/dashboard/TaskCard';
 import { AddEventDialog } from '@/components/dashboard/AddEventDialog';
 import { ImportICSDialog } from '@/components/dashboard/ImportICSDialog';
+import { CategoryLegend } from '@/components/dashboard/CategoryLegend';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Calendar as CalendarIcon, 
-  ChevronLeft, 
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import {
+  Calendar as CalendarIcon,
+  ChevronLeft,
   ChevronRight,
   List,
   Grid
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getCategoryColor } from '@/lib/category-colors';
 
 export default function CalendarPage() {
-  const { events, loading, addEvent, importEvents, deleteEvent } = useEvents();
+  const { events, loading: eventsLoading, addEvent, importEvents, updateEventCategory, deleteEvent } = useEvents();
+  const { tasks, loading: tasksLoading, updateTaskStatus, deleteTask } = useTasks();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [view, setView] = useState<'calendar' | 'list'>('calendar');
+
+  const loading = eventsLoading || tasksLoading;
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  const eventsForDate = (date: Date) => 
+  const eventsForDate = (date: Date) =>
     events.filter((event) => isSameDay(new Date(event.start_time), date));
 
+  const tasksForDate = (date: Date) =>
+    tasks.filter((task) => task.due_date && isSameDay(new Date(task.due_date), date));
+
   const selectedDateEvents = selectedDate ? eventsForDate(selectedDate) : [];
+  const selectedDateTasks = selectedDate ? tasksForDate(selectedDate) : [];
 
   const previousMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
@@ -49,7 +61,7 @@ export default function CalendarPage() {
             Calendar
           </h1>
           <p className="text-muted-foreground mt-1">
-            {events.length} upcoming events
+            {events.length} events • {tasks.filter(t => t.due_date).length} tasks
           </p>
         </div>
         
@@ -78,9 +90,13 @@ export default function CalendarPage() {
       </div>
 
       {view === 'calendar' ? (
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Calendar */}
-          <Card className="lg:col-span-2">
+        <div className="space-y-6">
+          {/* Category Legend */}
+          <CategoryLegend />
+
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Calendar */}
+            <Card className="lg:col-span-2">
             <CardContent className="p-6">
               {/* Month Navigation */}
               <div className="flex items-center justify-between mb-6">
@@ -116,8 +132,10 @@ export default function CalendarPage() {
                 
                 {days.map((day) => {
                   const dayEvents = eventsForDate(day);
+                  const dayTasks = tasksForDate(day);
                   const isSelected = selectedDate && isSameDay(day, selectedDate);
-                  
+                  const hasItems = dayEvents.length > 0 || dayTasks.length > 0;
+
                   return (
                     <button
                       key={day.toISOString()}
@@ -129,14 +147,26 @@ export default function CalendarPage() {
                       )}
                     >
                       <div className="text-foreground">{format(day, 'd')}</div>
-                      {dayEvents.length > 0 && (
-                        <div className="flex justify-center gap-0.5 mt-1">
-                          {dayEvents.slice(0, 3).map((_, i) => (
+                      {hasItems && (
+                        <div className="flex justify-center gap-0.5 mt-1 flex-wrap">
+                          {/* Show event dots */}
+                          {dayEvents.slice(0, 2).map((_, i) => (
                             <div
-                              key={i}
+                              key={`event-${i}`}
                               className="w-1.5 h-1.5 rounded-full bg-primary"
                             />
                           ))}
+                          {/* Show task dots with category colors */}
+                          {dayTasks.slice(0, 2).map((task, i) => {
+                            const categoryColor = getCategoryColor(task.category);
+                            return (
+                              <div
+                                key={`task-${i}`}
+                                className="w-1.5 h-1.5 rounded-full"
+                                style={{ backgroundColor: categoryColor.dotColor }}
+                              />
+                            );
+                          })}
                         </div>
                       )}
                     </button>
@@ -146,34 +176,78 @@ export default function CalendarPage() {
             </CardContent>
           </Card>
 
-          {/* Selected Date Events */}
+          {/* Selected Date Events & Tasks */}
           <div>
             <h3 className="text-lg font-semibold mb-4">
               {selectedDate ? format(selectedDate, 'EEEE, MMMM d') : 'Select a date'}
             </h3>
-            
+
             {loading ? (
               <div className="space-y-3">
                 {[1, 2].map((i) => (
                   <Skeleton key={i} className="h-32 w-full rounded-xl" />
                 ))}
               </div>
-            ) : selectedDateEvents.length === 0 ? (
+            ) : selectedDateEvents.length === 0 && selectedDateTasks.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground border border-dashed border-border rounded-xl">
                 <CalendarIcon className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                <p>No events</p>
+                <p>No events or tasks</p>
               </div>
             ) : (
-              <div className="space-y-3">
-                {selectedDateEvents.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    onDelete={deleteEvent}
-                  />
-                ))}
-              </div>
+              <Tabs defaultValue="all" className="w-full">
+                <TabsList className="grid w-full grid-cols-3 mb-4">
+                  <TabsTrigger value="all">
+                    All ({selectedDateEvents.length + selectedDateTasks.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="events">
+                    Events ({selectedDateEvents.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="tasks">
+                    Tasks ({selectedDateTasks.length})
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="all" className="space-y-3">
+                  {selectedDateEvents.map((event) => (
+                    <EventCard key={event.id} event={event} onDelete={deleteEvent} onCategoryChange={updateEventCategory} />
+                  ))}
+                  {selectedDateTasks.map((task) => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      onStatusChange={updateTaskStatus}
+                      onDelete={deleteTask}
+                    />
+                  ))}
+                </TabsContent>
+
+                <TabsContent value="events" className="space-y-3">
+                  {selectedDateEvents.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">No events</p>
+                  ) : (
+                    selectedDateEvents.map((event) => (
+                      <EventCard key={event.id} event={event} onDelete={deleteEvent} onCategoryChange={updateEventCategory} />
+                    ))
+                  )}
+                </TabsContent>
+
+                <TabsContent value="tasks" className="space-y-3">
+                  {selectedDateTasks.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">No tasks</p>
+                  ) : (
+                    selectedDateTasks.map((task) => (
+                      <TaskCard
+                        key={task.id}
+                        task={task}
+                        onStatusChange={updateTaskStatus}
+                        onDelete={deleteTask}
+                      />
+                    ))
+                  )}
+                </TabsContent>
+              </Tabs>
             )}
+          </div>
           </div>
         </div>
       ) : (
@@ -194,12 +268,12 @@ export default function CalendarPage() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {events.map((event, index) => (
-                <div 
-                  key={event.id} 
+                <div
+                  key={event.id}
                   className="animate-fade-in"
                   style={{ animationDelay: `${index * 30}ms` }}
                 >
-                  <EventCard event={event} onDelete={deleteEvent} />
+                  <EventCard event={event} onDelete={deleteEvent} onCategoryChange={updateEventCategory} />
                 </div>
               ))}
             </div>

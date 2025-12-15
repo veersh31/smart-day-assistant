@@ -3,13 +3,14 @@ import { useTasks } from '@/hooks/useTasks';
 import { useEvents } from '@/hooks/useEvents';
 import { useRecommendations } from '@/hooks/useRecommendations';
 import { RecommendationCard } from '@/components/dashboard/RecommendationCard';
+import { DailyBrief } from '@/components/dashboard/DailyBrief';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Sparkles, 
-  TrendingUp, 
-  Clock, 
+import {
+  Sparkles,
+  TrendingUp,
+  Clock,
   Target,
   RefreshCw,
   Loader2,
@@ -73,6 +74,11 @@ export default function Insights() {
           )}
           Generate Insights
         </Button>
+      </div>
+
+      {/* Daily Brief */}
+      <div className="mb-8">
+        <DailyBrief />
       </div>
 
       {/* Stats Cards */}

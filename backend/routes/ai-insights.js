@@ -287,4 +287,137 @@ Keep it under 200 words, conversational, and encouraging.
   }
 });
 
+// Prep Task Generation Schema
+const prepTaskSchema = z.object({
+  prep_tasks: z.array(z.object({
+    event_id: z.string().describe('Related event ID'),
+    event_title: z.string().describe('Original event title'),
+    task_title: z.string().describe('Specific, actionable task title'),
+    task_description: z.string().describe('Detailed task description'),
+    priority_score: z.number().min(0).max(100).describe('Urgency-based priority'),
+    priority_level: z.enum(['low', 'medium', 'high']).describe('Priority level'),
+    suggested_category: z.enum(['Work', 'Personal', 'Health', 'Finance', 'Learning', 'Errands', 'Creative', 'Social']),
+    due_date: z.string().describe('ISO date for when task should be completed'),
+    reasoning: z.string().describe('Why this prep task is needed'),
+    is_duplicate: z.boolean().describe('Whether similar task already exists'),
+    similar_task_id: z.string().nullable().describe('ID of similar existing task if found')
+  })).describe('Array of suggested prep tasks')
+});
+
+// Generate Prep Tasks Endpoint
+router.post('/generate-prep-tasks', async (req, res) => {
+  try {
+    const { events, existing_tasks, current_date } = req.body;
+
+    const parser = StructuredOutputParser.fromZodSchema(prepTaskSchema);
+    const formatInstructions = parser.getFormatInstructions();
+
+    // Format events for AI consumption
+    const eventsContext = events.map(e => {
+      const daysUntil = Math.ceil(
+        (new Date(e.start_time) - new Date(current_date)) / (1000 * 60 * 60 * 24)
+      );
+      return `- "${e.title}" (${e.category || 'Uncategorized'}) on ${e.start_time} (${daysUntil} days away)${e.description ? ': ' + e.description : ''}`;
+    }).join('\n');
+
+    const tasksContext = existing_tasks.map(t =>
+      `- "${t.title}"${t.description ? ': ' + t.description : ''} (due: ${t.due_date || 'no deadline'})`
+    ).join('\n') || 'No existing tasks';
+
+    const prompt = PromptTemplate.fromTemplate(`
+You are an expert personal assistant specializing in event preparation and productivity planning.
+
+TASK: Analyze upcoming calendar events and generate specific preparatory tasks that will help the user be ready for each event.
+
+UPCOMING EVENTS (Next 7 Days):
+{events}
+
+EXISTING TASKS (For Deduplication):
+{existing_tasks}
+
+CURRENT DATE: {current_date}
+
+INSTRUCTIONS:
+
+1. EVENT ANALYSIS: For each event, determine if it requires preparation tasks
+   - REQUIRE PREP: Interviews, presentations, important meetings, exams, deadlines, client calls, workshops, doctor appointments
+   - SKIP: Lunch, casual coffee, informal catch-ups, personal time blocks, routine check-ins (unless specified as important)
+
+2. TASK GENERATION: For events needing prep, create SPECIFIC, ACTIONABLE tasks
+   Examples:
+   - "Technical Interview" → "Review data structures and algorithms, practice coding problems"
+   - "Client Presentation" → "Prepare PowerPoint deck with Q3 metrics and projections"
+   - "Doctor Appointment" → "Write down symptoms and questions for doctor"
+   - "Team Planning Meeting" → "Review last sprint's progress and prepare agenda items"
+
+3. PRIORITY CALCULATION (Based on days until event):
+   - 1-2 days away: priority_level="high" priority_score=80-100
+   - 3-4 days away: priority_level="high" priority_score=60-79
+   - 5-7 days away: priority_level="medium" priority_score=40-59
+
+   IMPORTANT: priority_level MUST be exactly one of: "low", "medium", or "high" (no hyphens, no other values)
+
+4. DUE DATE LOGIC:
+   - For events 1-2 days away: Due date = 1 day before event
+   - For events 3-5 days away: Due date = 2 days before event
+   - For events 6-7 days away: Due date = 3 days before event
+
+5. SMART DEDUPLICATION:
+   - Check existing tasks for similar titles/descriptions
+   - Consider tasks duplicate if:
+     * Same event mentioned (fuzzy match on event title)
+     * Similar preparation keywords (e.g., "study for interview" vs "prepare for interview")
+     * Same due date window (within 1 day)
+   - If duplicate found, set is_duplicate=true and provide similar_task_id
+
+6. CATEGORY MAPPING:
+   - Work events → Work
+   - Medical/fitness → Health
+   - Learning/courses → Learning
+   - Social events → Social
+   - Match event category if available
+
+QUALITY STANDARDS:
+- Task titles must be SPECIFIC and ACTIONABLE (not just "Prepare for X")
+- Include WHAT to prepare in the task title
+- Reasoning should explain WHY this prep is important
+- Be selective - only create tasks for events that genuinely need preparation
+- Aim for 1-2 prep tasks per event maximum (don't over-generate)
+
+{format_instructions}
+`);
+
+    const input = await prompt.format({
+      events: eventsContext,
+      existing_tasks: tasksContext,
+      current_date: current_date,
+      format_instructions: formatInstructions,
+    });
+
+    const response = await getLLM().invoke(input);
+    const parsed = await parser.parse(response.content);
+
+    // Filter out duplicates
+    const newTasks = parsed.prep_tasks.filter(task => !task.is_duplicate);
+
+    res.json({
+      generated_tasks: newTasks,
+      duplicates_found: parsed.prep_tasks.filter(task => task.is_duplicate),
+      total_events_analyzed: events.length,
+      tasks_created: newTasks.length
+    });
+  } catch (error) {
+    console.error('Error generating prep tasks:', error);
+    res.status(500).json({
+      error: error.message,
+      fallback: {
+        generated_tasks: [],
+        duplicates_found: [],
+        total_events_analyzed: 0,
+        tasks_created: 0
+      }
+    });
+  }
+});
+
 export default router;

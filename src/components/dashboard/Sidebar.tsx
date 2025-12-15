@@ -32,18 +32,18 @@ export function Sidebar() {
   };
 
   return (
-    <aside 
+    <aside
       className={cn(
-        "h-screen flex flex-col border-r border-border bg-card transition-all duration-300",
-        collapsed ? "w-16" : "w-64"
+        "h-screen flex flex-col border-r border-border bg-background transition-all duration-200",
+        collapsed ? "w-16" : "w-60"
       )}
     >
       {/* Logo */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-border">
         {!collapsed && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center shadow-glow">
-              <Sparkles className="h-4 w-4 text-primary-foreground" />
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Sparkles className="h-4 w-4 text-primary" />
             </div>
             <span className="font-semibold text-foreground">Prioritize</span>
           </div>
@@ -70,47 +70,47 @@ export function Sidebar() {
             to={item.path}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors duration-150",
                 isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                  ? "bg-primary/5 text-primary font-medium"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 collapsed && "justify-center px-2"
               )
             }
           >
-            <item.icon className="h-5 w-5 shrink-0" />
+            <item.icon className="h-4 w-4 shrink-0" />
             {!collapsed && <span>{item.label}</span>}
           </NavLink>
         ))}
       </nav>
 
       {/* User Section */}
-      <div className="p-3 border-t border-border space-y-2">
+      <div className="p-3 border-t border-border space-y-1">
         <NavLink
           to="/settings"
           className={({ isActive }) =>
             cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+              "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors duration-150",
               isActive
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                ? "bg-primary/5 text-primary font-medium"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
               collapsed && "justify-center px-2"
             )
           }
         >
-          <Settings className="h-5 w-5 shrink-0" />
+          <Settings className="h-4 w-4 shrink-0" />
           {!collapsed && <span>Settings</span>}
         </NavLink>
-        
+
         <Button
           variant="ghost"
           onClick={handleSignOut}
           className={cn(
-            "w-full text-muted-foreground hover:text-foreground",
-            collapsed ? "justify-center px-2" : "justify-start gap-3"
+            "w-full text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-150",
+            collapsed ? "justify-center px-2" : "justify-start gap-3 px-3 py-2"
           )}
         >
-          <LogOut className="h-5 w-5 shrink-0" />
+          <LogOut className="h-4 w-4 shrink-0" />
           {!collapsed && <span>Sign out</span>}
         </Button>
 

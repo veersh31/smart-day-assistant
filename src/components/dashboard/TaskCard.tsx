@@ -85,21 +85,12 @@ export function TaskCard({ task, onStatusChange, onDelete }: TaskCardProps) {
   const CategoryIcon = category?.icon || Briefcase;
 
   return (
-    <Card 
+    <Card
       className={cn(
-        "group transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-l-4 overflow-hidden",
-        isCompleted ? "opacity-60 border-l-muted" : `border-l-priority-${priority}`,
-        "relative"
+        "group transition-shadow duration-200 hover:shadow-md border-l-4",
+        isCompleted ? "opacity-60 border-l-muted" : `border-l-priority-${priority}`
       )}
     >
-      {/* Priority indicator bar */}
-      {!isCompleted && task.priority_score && task.priority_score >= 80 && (
-        <div className="absolute top-0 right-0 w-20 h-20 overflow-hidden">
-          <div className="absolute top-2 -right-6 rotate-45 bg-priority-high text-priority-high-foreground text-[10px] font-bold py-0.5 px-6 shadow-sm">
-            URGENT
-          </div>
-        </div>
-      )}
       
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
@@ -127,16 +118,16 @@ export function TaskCard({ task, onStatusChange, onDelete }: TaskCardProps) {
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity duration-150"
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="animate-scale-in">
-                  <DropdownMenuItem 
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
                     onClick={() => onDelete(task.id)}
                     className="text-destructive focus:text-destructive"
                   >
@@ -154,8 +145,8 @@ export function TaskCard({ task, onStatusChange, onDelete }: TaskCardProps) {
             )}
             
             {task.ai_summary && (
-              <div className="flex items-start gap-2 mt-3 p-2.5 rounded-lg bg-gradient-to-r from-primary/5 to-info/5 border border-primary/10">
-                <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5 animate-pulse-subtle" />
+              <div className="flex items-start gap-2 mt-3 p-2.5 rounded-md bg-primary/5 border border-primary/10">
+                <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   {task.ai_summary}
                 </p>

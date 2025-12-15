@@ -1,46 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
 @layer base {
   :root {
-    /* Vibrant Productivity Theme - Teal & Coral Accents */
-    --background: 220 25% 97%;
-    --foreground: 230 25% 12%;
+    /* Modern Neutral Theme - Subtle Teal Accent */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 230 25% 12%;
+    --card-foreground: 0 0% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 230 25% 12%;
+    --popover-foreground: 0 0% 9%;
 
-    /* Rich Teal Primary */
+    /* Teal Primary - Used Sparingly */
     --primary: 172 66% 40%;
     --primary-foreground: 0 0% 100%;
 
-    /* Soft Lavender Secondary */
-    --secondary: 240 20% 96%;
-    --secondary-foreground: 230 25% 12%;
+    /* Neutral Secondary */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 220 20% 94%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    /* Coral Accent */
-    --accent: 12 76% 61%;
-    --accent-foreground: 0 0% 100%;
+    /* Subtle Accent */
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 20% 88%;
-    --input: 220 20% 90%;
+    --border: 0 0% 91%;
+    --input: 0 0% 91%;
     --ring: 172 66% 40%;
 
-    --radius: 0.875rem;
+    --radius: 0.5rem;
 
-    /* Extended Semantic Colors */
+    /* Semantic Colors */
     --success: 152 69% 41%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
@@ -48,12 +48,12 @@
     --info: 199 89% 48%;
     --info-foreground: 0 0% 100%;
 
-    /* Priority Colors - More Vibrant */
-    --priority-high: 0 84% 60%;
+    /* Priority Colors - Todoist-inspired */
+    --priority-high: 0 72% 51%;
     --priority-medium: 38 92% 50%;
-    --priority-low: 152 69% 41%;
+    --priority-low: 0 0% 60%;
 
-    /* Category Colors */
+    /* Category Colors - Muted */
     --category-work: 217 91% 60%;
     --category-personal: 280 68% 60%;
     --category-health: 152 69% 41%;
@@ -63,72 +63,59 @@
     --category-creative: 330 81% 60%;
     --category-social: 262 83% 58%;
 
-    /* Glass Effects */
-    --glass-bg: 0 0% 100% / 0.85;
-    --glass-border: 220 20% 88% / 0.5;
+    /* Clean Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 
-    /* Gradient Stops */
-    --gradient-start: 172 66% 40%;
-    --gradient-mid: 199 89% 48%;
-    --gradient-end: 217 91% 60%;
-
-    /* Enhanced Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(230 25% 12% / 0.04);
-    --shadow-md: 0 4px 12px -2px hsl(230 25% 12% / 0.08), 0 2px 4px -2px hsl(230 25% 12% / 0.04);
-    --shadow-lg: 0 12px 24px -4px hsl(230 25% 12% / 0.1), 0 4px 8px -2px hsl(230 25% 12% / 0.05);
-    --shadow-xl: 0 24px 48px -12px hsl(230 25% 12% / 0.15);
-    --shadow-glow: 0 0 24px hsl(172 66% 40% / 0.35);
-    --shadow-glow-accent: 0 0 24px hsl(12 76% 61% / 0.35);
-
-    --sidebar-background: 0 0% 99%;
-    --sidebar-foreground: 230 25% 25%;
+    /* Sidebar - Notion-style */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 9%;
     --sidebar-primary: 172 66% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 96%;
-    --sidebar-accent-foreground: 230 25% 12%;
-    --sidebar-border: 220 20% 92%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 91%;
     --sidebar-ring: 172 66% 40%;
   }
 
   .dark {
-    --background: 230 25% 7%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 7%;
+    --foreground: 0 0% 98%;
 
-    --card: 230 25% 10%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 230 25% 10%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 98%;
 
     --primary: 172 66% 50%;
-    --primary-foreground: 230 25% 7%;
+    --primary-foreground: 0 0% 7%;
 
-    --secondary: 230 20% 15%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 230 20% 15%;
-    --muted-foreground: 220 15% 60%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 12 76% 55%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 63% 45%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 230 20% 18%;
-    --input: 230 20% 18%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
     --ring: 172 66% 50%;
 
-    --glass-bg: 230 25% 10% / 0.85;
-    --glass-border: 230 20% 20% / 0.5;
-
-    --sidebar-background: 230 25% 8%;
-    --sidebar-foreground: 210 40% 98%;
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 172 66% 50%;
-    --sidebar-primary-foreground: 230 25% 7%;
-    --sidebar-accent: 230 20% 15%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 230 20% 15%;
+    --sidebar-primary-foreground: 0 0% 7%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 15%;
     --sidebar-ring: 172 66% 50%;
   }
 }
@@ -141,47 +128,46 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+    line-height: 1.625;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+  h1 {
+    @apply text-3xl font-semibold tracking-tight;
+  }
+
+  h2 {
+    @apply text-lg font-semibold;
+  }
+
+  h3 {
+    @apply text-sm font-medium;
+  }
+
+  h4, h5, h6 {
+    @apply text-sm font-medium;
   }
 }
 
 @layer utilities {
-  .glass {
-    @apply backdrop-blur-xl border;
-    background: hsl(var(--glass-bg));
-    border-color: hsl(var(--glass-border));
+  /* Typography Hierarchy - Notion-inspired */
+  .heading-page {
+    @apply text-3xl font-semibold tracking-tight;
   }
 
-  .gradient-primary {
-    background: linear-gradient(135deg, hsl(var(--gradient-start)) 0%, hsl(var(--gradient-mid)) 50%, hsl(var(--gradient-end)) 100%);
+  .heading-section {
+    @apply text-lg font-semibold text-foreground;
   }
 
-  .gradient-subtle {
-    background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+  .heading-card {
+    @apply text-sm font-medium text-foreground;
   }
 
-  .gradient-card {
-    background: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--muted) / 0.5) 100%);
+  .text-body {
+    @apply text-sm text-muted-foreground leading-relaxed;
   }
 
-  .gradient-accent {
-    background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--primary)) 100%);
-  }
-
-  .shadow-glow {
-    box-shadow: var(--shadow-glow);
-  }
-
-  .shadow-glow-accent {
-    box-shadow: var(--shadow-glow-accent);
-  }
-
-  .text-gradient {
-    @apply bg-clip-text text-transparent;
-    background: linear-gradient(135deg, hsl(var(--gradient-start)) 0%, hsl(var(--gradient-end)) 100%);
+  .text-secondary {
+    @apply text-xs text-muted-foreground;
   }
 
   /* Category Colors */
@@ -194,39 +180,21 @@
   .category-creative { background-color: hsl(var(--category-creative)); }
   .category-social { background-color: hsl(var(--category-social)); }
 
-  /* Animations */
+  /* Subtle Animations Only */
   .animate-fade-in {
-    animation: fadeIn 0.4s ease-out forwards;
+    animation: fadeIn 0.3s ease-out forwards;
   }
 
   .animate-slide-up {
-    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slideUp 0.3s ease-out forwards;
   }
 
   .animate-slide-down {
-    animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slideDown 0.3s ease-out forwards;
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-
-  .animate-pulse-subtle {
-    animation: pulseSubtle 2s ease-in-out infinite;
-  }
-
-  .animate-shimmer {
-    animation: shimmer 2s linear infinite;
-    background: linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.1) 50%, transparent 100%);
-    background-size: 200% 100%;
-  }
-
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-
-  .animate-bounce-subtle {
-    animation: bounceSlight 2s ease-in-out infinite;
+    animation: scaleIn 0.2s ease-out forwards;
   }
 }
 
@@ -236,38 +204,36 @@
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.92); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes pulseSubtle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.75; }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
-@keyframes bounceSlight {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Scrollbar Styling */

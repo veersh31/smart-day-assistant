@@ -1,16 +1,20 @@
 import { useState } from 'react';
 import { useTasks } from '@/hooks/useTasks';
+import { useEvents } from '@/hooks/useEvents';
+import { useAITaskGeneration } from '@/hooks/useAITaskGeneration';
 import { TaskCard } from '@/components/dashboard/TaskCard';
 import { AddTaskDialog } from '@/components/dashboard/AddTaskDialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  CheckSquare, 
-  Search, 
+import {
+  CheckSquare,
+  Search,
   Filter,
   SortAsc,
-  SortDesc
+  SortDesc,
+  Sparkles,
+  Loader2
 } from 'lucide-react';
 import {
   Select,
@@ -22,10 +26,16 @@ import {
 
 export default function Tasks() {
   const { tasks, loading, addTask, updateTaskStatus, deleteTask } = useTasks();
+  const { events } = useEvents();
+  const { generatePrepTasks, isGenerating } = useAITaskGeneration();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const handleGenerateAITasks = async () => {
+    await generatePrepTasks(events, tasks);
+  };
 
   const filteredTasks = tasks
     .filter((task) => {
@@ -42,20 +52,35 @@ export default function Tasks() {
     });
 
   return (
-    <div className="min-h-screen p-6 lg:p-8">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-foreground flex items-center gap-3">
+          <h1 className="heading-page flex items-center gap-3">
             <CheckSquare className="h-8 w-8 text-primary" />
             Tasks
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-2">
             {filteredTasks.length} tasks • {tasks.filter(t => t.status === 'completed').length} completed
           </p>
         </div>
-        
-        <AddTaskDialog onAdd={addTask} />
+
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={handleGenerateAITasks}
+            disabled={isGenerating || events.length === 0}
+          >
+            {isGenerating ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="h-4 w-4 text-primary" />
+            )}
+            Generate AI Tasks
+          </Button>
+          <AddTaskDialog onAdd={addTask} />
+        </div>
       </div>
 
       {/* Filters */}
@@ -114,11 +139,11 @@ export default function Tasks() {
       {loading ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className="h-40 w-full rounded-xl" />
+            <Skeleton key={i} className="h-40 w-full rounded-lg" />
           ))}
         </div>
       ) : filteredTasks.length === 0 ? (
-        <div className="text-center py-16 text-muted-foreground border border-dashed border-border rounded-xl">
+        <div className="text-center py-16 text-muted-foreground border border-dashed border-border rounded-lg">
           <CheckSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
           <p className="text-lg">No tasks found</p>
           <p className="text-sm mt-1">
@@ -129,18 +154,13 @@ export default function Tasks() {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredTasks.map((task, index) => (
-            <div 
-              key={task.id} 
-              className="animate-fade-in"
-              style={{ animationDelay: `${index * 30}ms` }}
-            >
-              <TaskCard
-                task={task}
-                onStatusChange={updateTaskStatus}
-                onDelete={deleteTask}
-              />
-            </div>
+          {filteredTasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onStatusChange={updateTaskStatus}
+              onDelete={deleteTask}
+            />
           ))}
         </div>
       )}

@@ -51,6 +51,31 @@ interface DailyBriefResponse {
   brief: string;
 }
 
+interface PrepTask {
+  event_id: string;
+  event_title: string;
+  task_title: string;
+  task_description: string;
+  priority_score: number;
+  priority_level: 'low' | 'medium' | 'high';
+  suggested_category: string;
+  due_date: string;
+  reasoning: string;
+}
+
+interface PrepTaskRequest {
+  events: any[];
+  existing_tasks: any[];
+  current_date: string;
+}
+
+interface PrepTaskResponse {
+  generated_tasks: PrepTask[];
+  duplicates_found: any[];
+  total_events_analyzed: number;
+  tasks_created: number;
+}
+
 class LangChainAPI {
   private baseURL: string;
 
@@ -175,6 +200,37 @@ class LangChainAPI {
     }
   }
 
+  async generatePrepTasks(data: PrepTaskRequest): Promise<PrepTaskResponse> {
+    try {
+      const response = await fetch(`${this.baseURL}/api/ai/generate-prep-tasks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData.fallback) {
+          console.warn('Using fallback for prep task generation');
+          return errorData.fallback;
+        }
+        throw new Error(`Failed to generate prep tasks: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error in generatePrepTasks:', error);
+      return {
+        generated_tasks: [],
+        duplicates_found: [],
+        total_events_analyzed: 0,
+        tasks_created: 0,
+      };
+    }
+  }
+
   async healthCheck(): Promise<boolean> {
     try {
       const response = await fetch(`${this.baseURL}/health`);
@@ -188,4 +244,4 @@ class LangChainAPI {
 }
 
 export const langChainAPI = new LangChainAPI();
-export type { TaskPrioritizationResponse, EventAnalysisResponse, Recommendation };
+export type { TaskPrioritizationResponse, EventAnalysisResponse, Recommendation, PrepTask, PrepTaskResponse };

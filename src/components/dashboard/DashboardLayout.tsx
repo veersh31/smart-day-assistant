@@ -25,10 +25,12 @@ export function DashboardLayout() {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="flex-1 overflow-auto">
-        <Outlet />
+      <main className="flex-1 overflow-y-auto bg-background">
+        <div className="max-w-5xl mx-auto p-8">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

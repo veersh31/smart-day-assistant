@@ -81,7 +81,7 @@ export function EventCard({ event, onDelete, onCategoryChange }: EventCardProps)
   };
 
   return (
-    <Card className="group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 border-l-4 border-l-primary">
+    <Card className="group transition-shadow duration-200 hover:shadow-md border-l-4 border-l-primary">
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">

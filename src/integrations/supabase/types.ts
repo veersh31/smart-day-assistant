@@ -71,6 +71,7 @@ export type Database = {
       calendar_events: {
         Row: {
           ai_summary: string | null
+          category: string | null
           created_at: string
           description: string | null
           end_time: string
@@ -86,6 +87,7 @@ export type Database = {
         }
         Insert: {
           ai_summary?: string | null
+          category?: string | null
           created_at?: string
           description?: string | null
           end_time: string
@@ -101,6 +103,7 @@ export type Database = {
         }
         Update: {
           ai_summary?: string | null
+          category?: string | null
           created_at?: string
           description?: string | null
           end_time?: string

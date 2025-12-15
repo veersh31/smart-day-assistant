@@ -19,27 +19,22 @@ const variantStyles = {
   default: {
     icon: 'bg-muted text-muted-foreground',
     value: 'text-foreground',
-    glow: '',
   },
   primary: {
     icon: 'bg-primary/10 text-primary',
-    value: 'text-primary',
-    glow: 'group-hover:shadow-glow',
+    value: 'text-foreground',
   },
   accent: {
-    icon: 'bg-accent/10 text-accent',
-    value: 'text-accent',
-    glow: 'group-hover:shadow-glow-accent',
+    icon: 'bg-accent/10 text-accent-foreground',
+    value: 'text-foreground',
   },
   success: {
     icon: 'bg-success/10 text-success',
-    value: 'text-success',
-    glow: '',
+    value: 'text-foreground',
   },
   warning: {
     icon: 'bg-warning/10 text-warning',
-    value: 'text-warning',
-    glow: '',
+    value: 'text-foreground',
   },
 };
 
@@ -56,34 +51,26 @@ export function EnhancedStatsCard({
 
   return (
     <Card className={cn(
-      "group relative overflow-hidden border border-border/50 bg-card/50 backdrop-blur-sm",
-      "transition-all duration-300 hover:shadow-lg hover:border-primary/20",
-      styles.glow,
+      "border border-border bg-card hover:shadow-md transition-shadow duration-200",
       className
     )}>
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-      {/* Shimmer effect on hover */}
-      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
-
-      <CardContent className="relative p-6">
+      <CardContent className="p-6">
         <div className="flex items-start justify-between gap-4">
           {/* Left side: Text content */}
           <div className="space-y-2 flex-1">
-            <p className="text-sm font-medium text-muted-foreground tracking-wide uppercase">
+            <p className="text-sm font-medium text-muted-foreground">
               {title}
             </p>
             <div className="flex items-baseline gap-3">
               <p className={cn(
-                "text-4xl font-bold tracking-tight tabular-nums",
+                "text-3xl font-semibold tracking-tight",
                 styles.value
               )}>
                 {value}
               </p>
               {trend && (
                 <span className={cn(
-                  "text-sm font-semibold flex items-center gap-1",
+                  "text-sm font-medium flex items-center gap-1",
                   trend.direction === 'up' && "text-success",
                   trend.direction === 'down' && "text-destructive",
                   trend.direction === 'neutral' && "text-muted-foreground"
@@ -103,7 +90,7 @@ export function EnhancedStatsCard({
               )}
             </div>
             {subtitle && (
-              <p className="text-sm text-muted-foreground/80">
+              <p className="text-sm text-muted-foreground">
                 {subtitle}
               </p>
             )}
@@ -111,11 +98,10 @@ export function EnhancedStatsCard({
 
           {/* Right side: Icon */}
           <div className={cn(
-            "p-4 rounded-2xl transition-all duration-300",
-            "group-hover:scale-110 group-hover:rotate-3",
+            "p-3 rounded-lg",
             styles.icon
           )}>
-            <Icon className="h-6 w-6" strokeWidth={2.5} />
+            <Icon className="h-5 w-5" />
           </div>
         </div>
       </CardContent>

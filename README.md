@@ -155,13 +155,3 @@ This project is open source and available under the [MIT License](LICENSE).
 - Database and auth by [Supabase](https://supabase.com/)
 - Deployed on [Vercel](https://vercel.com/) and [Railway](https://railway.app/)
 
-## 📞 Support
-
-If you encounter any issues or have questions:
-1. Check the [Deployment Guide](./DEPLOYMENT.md)
-2. Open an issue on GitHub
-3. Check existing issues for solutions
-
----
-
-**Made with ❤️ and AI**
